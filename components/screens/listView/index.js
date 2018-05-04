@@ -9,6 +9,8 @@ import { CONFIG } from '../../../constants/index'
 import TextLimit from '../../text_limit'
 import { SET_REGIONS, SET_REGION } from '../../../constants/action'
 import { addStorage } from '../../../store/AsyncStorage'
+const { BASE_URL, API_KEY, DEFAULT_REGION, DEFAULT_NB_RESULT } = CONFIG.YOUTUBE
+
 class ListView extends React.Component {
 	static navigationOptions = ({ navigation }) => {
 		const { params = {} } = navigation.state
@@ -106,7 +108,6 @@ class ListView extends React.Component {
 
 	_getRegions = async () => {
 		try {
-			let { BASE_URL } = CONFIG.YOUTUBE
 			let response = await fetch(BASE_URL + '/i18nRegions?part=snippet&key=AIzaSyDq_JV_7kIBn5KcL0obvJGbcyqkHteq9HU')
 			let json = await response.json()
 			let regions = []
@@ -127,7 +128,7 @@ class ListView extends React.Component {
 	}
 
 	_getVideos = async () => {
-		let { BASE_URL, API_KEY, DEFAULT_REGION, DEFAULT_NB_RESULT } = CONFIG.YOUTUBE
+
 		let list = []
 		// const search = this.props.search == '' ? '&q=donaldduck' : this.props.search
 		// '&q=donaldduck'

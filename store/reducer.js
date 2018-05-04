@@ -13,7 +13,7 @@ export default function reducer(prev_state = initial_state, action) {
 			})
 			break
 			case SET_REGIONS:
-			console.log('SET REGIOONNSSSS ========> ' + JSON.stringify(action.payload.regions))
+			//console.log('SET REGIOONNSSSS ========> ' + JSON.stringify(action.payload.regions))
 			return Object.assign({}, prev_state, {
 				regions: action.payload.regions
 			})
