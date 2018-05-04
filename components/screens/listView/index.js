@@ -106,7 +106,8 @@ class ListView extends React.Component {
 
 	_getRegions = async () => {
 		try {
-			let response = await fetch(BASE_URL + '/i18nRegions?part=snippet&key=AIzaSyDq_JV_7kIBn5KcL0obvJGbcyqkHteq9HU&order=rating')
+			let { BASE_URL } = CONFIG.YOUTUBE
+			let response = await fetch(BASE_URL + '/i18nRegions?part=snippet&key=AIzaSyDq_JV_7kIBn5KcL0obvJGbcyqkHteq9HU')
 			let json = await response.json()
 			let regions = []
 
@@ -134,12 +135,11 @@ class ListView extends React.Component {
 			let region = this.props.region
 			let response = await fetch(
 				BASE_URL +
-					API_KEY +
-					'/search?part=snippet&type=video&videoSyndicated=true&order=rating' +
-					'&chart=mostPopular&regionCode=' +
+					'/search?part=snippet&type=video&videoSyndicated=true&order=rating&chart=mostPopular&regionCode=' +
 					region.id +
 					'&maxResults=' +
-					DEFAULT_NB_RESULT
+					DEFAULT_NB_RESULT +
+					API_KEY
 			)
 			let json = await response.json()
 			if (!json.error) {
