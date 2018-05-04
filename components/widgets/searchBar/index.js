@@ -8,7 +8,7 @@ class Searchbar extends React.Component {
 	render() {
 		return (
 			<View style={styles.contener}>
-				<TextInput style={styles.bar} />
+				<TextInput onSubmitEditing={event => this.props.submit(event.nativeEvent.text)} style={styles.bar} />
 			</View>
 		)
 	}

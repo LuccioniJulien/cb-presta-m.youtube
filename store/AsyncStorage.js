@@ -1,6 +1,5 @@
-
 import {AsyncStorage} from 'react-native'
-//Package by VGRAUL 
+
 export async function getStorage(key) {
     try {
         const item = await AsyncStorage.getItem(key)

@@ -19,7 +19,14 @@ class ListView extends React.Component {
 				backgroundColor: '#ffff'
 			},
 			headerLeft: <Image style={{ height: 25, width: 120 }} source={require('../../../assets/logo.png')} />,
-			headerRight: <Menu nSet={() => navigation.navigate('Setting')} nSearch={params.search} nRandom={params.random} />
+			headerRight: (
+				<Menu
+					nSet={() => navigation.navigate('Setting')}
+					nSearch={params.search}
+					nRandom={params.random}
+					nFav={() => navigation.navigate('Favorites')}
+				/>
+			)
 		}
 	}
 
@@ -75,9 +82,8 @@ class ListView extends React.Component {
 		let componentList = this.state.list.map((item, idx) => {
 			return (
 				<Card
+					yobj={item}
 					key={idx}
-					url={item.url}
-					title={TextLimit({ str: item.title })}
 					nav={() =>
 						navigate('Player', {
 							Yurl: `https://www.youtube.com/watch?v=${item.Yurl}`,
@@ -99,11 +105,18 @@ class ListView extends React.Component {
 
 		return (
 			<View style={styles.container}>
-				{this.state.isSearchbarVisible ? <SearchBar /> : ''}
+				{this.state.isSearchbarVisible ? <SearchBar submit={this._submit} /> : ''}
 				<Text>{`Trends of ${this.props.region.name ? this.props.region.name : 'France'}`}</Text>
 				<ScrollView style={{ width: Dimensions.get('window').width - 10 }}>{componentList}</ScrollView>
 			</View>
 		)
+	}
+
+	_submit = value => {
+		//onSubmitEditing
+		console.log('submit' + value)
+		this._getVideos(value)
+		this.setState({ isSearchbarVisible: !this.state.isSearchbarVisible })
 	}
 
 	_getRegions = async () => {
@@ -127,21 +140,23 @@ class ListView extends React.Component {
 		}
 	}
 
-	_getVideos = async () => {
-
+	_getVideos = async (value = '') => {
 		let list = []
-		// const search = this.props.search == '' ? '&q=donaldduck' : this.props.search
-		// '&q=donaldduck'
+		let url = ''
+		const search = value == '' ? '' : '&q=' + value
+		console.log('search' + search)
 		try {
 			let region = this.props.region
-			let response = await fetch(
+			url =
 				BASE_URL +
-					'/search?part=snippet&type=video&videoSyndicated=true&order=rating&chart=mostPopular&regionCode=' +
-					region.id +
-					'&maxResults=' +
-					DEFAULT_NB_RESULT +
-					API_KEY
-			)
+				'/search?part=snippet&type=video&videoSyndicated=true&order=rating&chart=mostPopular&regionCode=' +
+				region.id +
+				search +
+				'&maxResults=' +
+				DEFAULT_NB_RESULT +
+				API_KEY
+			url = search == '' ? url : BASE_URL + '/search?part=snippet' + search + '&maxResults=' + DEFAULT_NB_RESULT + API_KEY
+			let response = await fetch(url)
 			let json = await response.json()
 			if (!json.error) {
 				for (const item of json.items) {
@@ -149,6 +164,15 @@ class ListView extends React.Component {
 					let url = item.snippet.thumbnails.high.url
 					let Yurl = item.id.videoId
 					let isFav = false
+					let favs = [...this.props.favorites]
+
+					for (let index = 0; index < favs.length; index++) {
+						if (favs[index].Yurl === Yurl) {
+							isFav = true
+							index = favs.length
+						}
+					}
+
 					list.push({ title, url, Yurl, isFav })
 				}
 				this.setState({ list, isLoading: false, regionCode: region })
@@ -164,7 +188,8 @@ mapStateToProps = state => {
 	return {
 		search: state.search,
 		region: state.region,
-		regions: state.regions
+		regions: state.regions,
+		favorites: state.favorites
 	}
 }
 

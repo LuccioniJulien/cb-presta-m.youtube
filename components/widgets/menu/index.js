@@ -5,7 +5,6 @@ import styles from './styles'
 import { connect } from 'react-redux'
 import { SEARCH } from '../../../constants/action'
 
-
 class Menu extends React.Component {
 	render() {
 		return (
@@ -21,7 +20,7 @@ class Menu extends React.Component {
 				<TouchableOpacity style={styles.pad} onPress={this.props.nRandom}>
 					<Icon size={20} color="#fff" containerStyle={styles.color} name="play-arrow" />
 				</TouchableOpacity>
-				<TouchableOpacity style={styles.pad}>
+				<TouchableOpacity style={styles.pad} onPress={this.props.nFav}>
 					<Icon size={20} color="#fff" containerStyle={styles.color} name="favorite" />
 				</TouchableOpacity>
 				<TouchableOpacity style={styles.pad} onPress={this.props.nSet}>

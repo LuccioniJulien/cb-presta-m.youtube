@@ -7,7 +7,6 @@ export default class Player extends React.Component {
 			title: navigation.state.params.title
 		})
 	
-
 	render() {
     const { params } = this.props.navigation.state
     console.log(params.Yurl)

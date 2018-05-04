@@ -1,9 +1,12 @@
 import React from 'react'
 import { StyleSheet, Text, View, Image } from 'react-native'
-import ListView from './components/screens/listView'
 import { StackNavigator } from 'react-navigation'
+
+import ListView from './components/screens/listView'
 import Player from './components/screens/player'
 import PickerView from './components/screens/settings'
+import Favorites from './components/screens/favorites'
+
 import { Provider } from 'react-redux'
 import { createStore } from 'redux'
 import reducer from './store/reducer'
@@ -14,7 +17,6 @@ const store = createStore(reducer)
 const dispatch = store.dispatch
 
 export default class App extends React.Component {
-
 	constructor(props) {
 		super(props)
 		this.state = {
@@ -26,9 +28,14 @@ export default class App extends React.Component {
 	async componentWillMount() {
 		const region = await getStorage(CONFIG.STORAGE.CURRENT_REGION)
 		const regions = await getStorage(CONFIG.STORAGE.AVAIBLE_REGION)
-
+		let favorites = await getStorage(CONFIG.STORAGE.FAV)
 		if (region) {
-			const lol = { region: JSON.parse(region), regions: JSON.parse(regions) }
+			if (!favorites) {
+				favorites = []
+			} else{
+				favorites = JSON.parse(favorites)
+			}
+			const lol = { region: JSON.parse(region), regions: JSON.parse(regions), favorites }
 			this.setState({ store: createStore(reducer, lol) })
 		} else {
 			this.setState({ store: store })
@@ -62,14 +69,17 @@ const Sn = StackNavigator({
 	},
 	Setting: {
 		screen: PickerView
+	},
+	Favorites: {
+		screen: Favorites
 	}
 })
 
 const styles = StyleSheet.create({
-	loading:{
+	loading: {
 		flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+		backgroundColor: '#fff',
+		alignItems: 'center',
+		justifyContent: 'center'
 	}
 })
