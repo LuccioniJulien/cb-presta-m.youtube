@@ -99,16 +99,14 @@ class ListView extends React.Component {
 			<View style={styles.container}>
 				{this.state.isSearchbarVisible ? <SearchBar /> : ''}
 				<Text>{`Trends of ${this.props.region.name ? this.props.region.name : 'France'}`}</Text>
-				<ScrollView style={{width:Dimensions.get('window').width - 10}}>{componentList}</ScrollView>
+				<ScrollView style={{ width: Dimensions.get('window').width - 10 }}>{componentList}</ScrollView>
 			</View>
 		)
 	}
 
 	_getRegions = async () => {
 		try {
-			let response = await fetch(
-				'https://www.googleapis.com/youtube/v3/i18nRegions?part=snippet&key=AIzaSyDq_JV_7kIBn5KcL0obvJGbcyqkHteq9HU&order=rating'
-			)
+			let response = await fetch(BASE_URL + '/i18nRegions?part=snippet&key=AIzaSyDq_JV_7kIBn5KcL0obvJGbcyqkHteq9HU&order=rating')
 			let json = await response.json()
 			let regions = []
 
@@ -134,7 +132,15 @@ class ListView extends React.Component {
 		// '&q=donaldduck'
 		try {
 			let region = this.props.region
-			let response = await fetch(BASE_URL + API_KEY + '&chart=mostPopular&regionCode=' + region.id + '&maxResults=' + DEFAULT_NB_RESULT)
+			let response = await fetch(
+				BASE_URL +
+					API_KEY +
+					'/search?part=snippet&type=video&videoSyndicated=true&order=rating' +
+					'&chart=mostPopular&regionCode=' +
+					region.id +
+					'&maxResults=' +
+					DEFAULT_NB_RESULT
+			)
 			let json = await response.json()
 			if (!json.error) {
 				for (const item of json.items) {
