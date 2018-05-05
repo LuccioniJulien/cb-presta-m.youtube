@@ -1,10 +1,10 @@
-import React from 'react'
 import { TextInput, View, Dimensions, Text, ScrollView } from 'react-native'
-import { Icon } from 'react-native-elements'
-import styles from './styles'
-import { connect } from 'react-redux'
-import Card from '../../widgets/card'
-import TextLimit from '../../text_limit'
+import { Icon      } from 'react-native-elements'
+import { connect   } from 'react-redux'
+import   Card        from '../../widgets/card'
+import   TextLimit   from '../../text_limit'
+import   styles      from './styles'
+import   React       from 'react'
 
 class FavoritesView extends React.Component {
 	render() {

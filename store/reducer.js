@@ -20,7 +20,7 @@ export default function reducer(prev_state = initial_state, action) {
 			})
 			break
 		case SET_FAV:
-			console.log('SET FAVS ========> ' + JSON.stringify(action.payload.favs))
+			//console.log('SET FAVS ========> ' + JSON.stringify(action.payload.favs))
 			return Object.assign({}, prev_state, {
 				favorites: action.payload.favs
 			})

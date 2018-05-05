@@ -1,10 +1,10 @@
-import React from 'react'
-import { Picker, View, TouchableOpacity, Text } from 'react-native'
-import styles from './styles'
-import { connect } from 'react-redux'
+import   React        from 'react'
+import   styles       from './styles'
+import { connect    } from 'react-redux'
 import { SET_REGION } from '../../../constants/action'
-import { CONFIG } from '../../../constants/index'
+import { CONFIG     } from '../../../constants/index'
 import { addStorage } from '../../../store/AsyncStorage'
+import { Picker, View, TouchableOpacity, Text } from 'react-native'
 
 class PickerView extends React.Component {
 	static navigationOptions = {
@@ -38,8 +38,8 @@ class PickerView extends React.Component {
 
 mapStateToProps = state => {
 	return {
-		search: state.search,
-		region: state.region,
+		search : state.search ,
+		region : state.region ,
 		regions: state.regions
 	}
 }

@@ -1,8 +1,10 @@
-import React from 'react'
 import { TextInput, View } from 'react-native'
-import { Icon } from 'react-native-elements'
-import styles from './styles'
+import { Icon    } from 'react-native-elements'
 import { connect } from 'react-redux'
+import   styles    from './styles'
+import   React     from 'react'
+
+
 
 class Searchbar extends React.Component {
 	render() {

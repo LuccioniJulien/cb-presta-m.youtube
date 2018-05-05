@@ -1,46 +1,44 @@
-import React from 'react'
 import { StyleSheet, Text, View, Image } from 'react-native'
-import { StackNavigator } from 'react-navigation'
 
-import ListView from './components/screens/listView'
-import Player from './components/screens/player'
+import React      from 'react'
+import ListView   from './components/screens/listView'
+import Player     from './components/screens/player'
 import PickerView from './components/screens/settings'
-import Favorites from './components/screens/favorites'
+import Favorites  from './components/screens/favorites'
+import reducer    from './store/reducer'
 
-import { Provider } from 'react-redux'
-import { createStore } from 'redux'
-import reducer from './store/reducer'
-import { getStorage } from './store/AsyncStorage'
-import { CONFIG } from './constants/index'
-
-const store = createStore(reducer)
-const dispatch = store.dispatch
+import { StackNavigator } from 'react-navigation'
+import { Provider       } from 'react-redux'
+import { createStore    } from 'redux'
+import { getStorage     } from './store/AsyncStorage'
+import { CONFIG         } from './constants/index'
 
 export default class App extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
 			isStoreLoading: true,
-			store: store
+			store: null
 		}
 	}
 
 	async componentWillMount() {
-		const region = await getStorage(CONFIG.STORAGE.CURRENT_REGION)
-		const regions = await getStorage(CONFIG.STORAGE.AVAIBLE_REGION)
-		let favorites = await getStorage(CONFIG.STORAGE.FAV)
-		if (region) {
-			if (!favorites) {
-				favorites = []
-			} else{
-				favorites = JSON.parse(favorites)
-			}
-			const lol = { region: JSON.parse(region), regions: JSON.parse(regions), favorites }
-			this.setState({ store: createStore(reducer, lol) })
-		} else {
-			this.setState({ store: store })
+		try {
+			let region    = await getStorage(CONFIG.STORAGE.CURRENT_REGION)
+			let regions   = await getStorage(CONFIG.STORAGE.AVAIBLE_REGION)
+			let favorites = await getStorage(CONFIG.STORAGE.FAV           )
+	
+			favorites = favorites ? JSON.parse(favorites) : []
+			regions   = regions   ? JSON.parse(regions  ) : []
+			region    = region    ? JSON.parse(region   ) : { id: 'FR', name: 'France' }
+	
+			const state = { region, regions, favorites }
+			this.setState({ store: createStore(reducer, state) })
+	
+			this.setState({ isStoreLoading: false })
+		} catch (error) {
+			console.log(error)
 		}
-		this.setState({ isStoreLoading: false })
 	}
 
 	render() {
@@ -77,9 +75,9 @@ const Sn = StackNavigator({
 
 const styles = StyleSheet.create({
 	loading: {
-		flex: 1,
+		flex           : 1,
 		backgroundColor: '#fff',
-		alignItems: 'center',
-		justifyContent: 'center'
+		alignItems     : 'center',
+		justifyContent : 'center'
 	}
 })

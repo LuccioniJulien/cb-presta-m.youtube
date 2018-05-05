@@ -1,14 +1,15 @@
-import React from 'react'
-import { StyleSheet, Text, View, ScrollView, Image, Button, Dimensions } from 'react-native'
-import styles from './styles'
-import Card from '../../widgets/card'
-import Menu from '../../widgets/menu'
-import SearchBar from '../../widgets/searchBar'
-import { connect } from 'react-redux'
-import { CONFIG } from '../../../constants/index'
-import TextLimit from '../../text_limit'
-import { SET_REGIONS, SET_REGION } from '../../../constants/action'
+import   React        from 'react'
+import   styles       from './styles'
+import   Card         from '../../widgets/card'
+import   Menu         from '../../widgets/menu'
+import   SearchBar    from '../../widgets/searchBar'
+import   TextLimit    from '../../text_limit'
+import { connect    } from 'react-redux'
+import { CONFIG     } from '../../../constants/index'
 import { addStorage } from '../../../store/AsyncStorage'
+import { StyleSheet, Text, View, ScrollView, Image, Button, Dimensions } from 'react-native'
+import { SET_REGIONS, SET_REGION } from '../../../constants/action'
+
 const { BASE_URL, API_KEY, DEFAULT_REGION, DEFAULT_NB_RESULT } = CONFIG.YOUTUBE
 
 class ListView extends React.Component {
@@ -55,6 +56,9 @@ class ListView extends React.Component {
 	}
 
 	_ramdom = async () => {
+		if (!this.props.regions) {
+			return
+		}
 		let randomRegion = this.props.regions[Math.floor(Math.random() * Math.floor(this.props.regions.length))]
 		await addStorage(CONFIG.STORAGE.CURRENT_REGION, randomRegion)
 		this.props.dispatch({
@@ -145,8 +149,10 @@ class ListView extends React.Component {
 		let url = ''
 		const search = value == '' ? '' : '&q=' + value
 		console.log('search' + search)
+		//this.setState({isLoading:true})
 		try {
 			let region = this.props.region
+			// on change l'url si c'est une recherche ou bien les tendances d'un pays
 			url =
 				BASE_URL +
 				'/search?part=snippet&type=video&videoSyndicated=true&order=rating&chart=mostPopular&regionCode=' +
@@ -166,6 +172,7 @@ class ListView extends React.Component {
 					let isFav = false
 					let favs = [...this.props.favorites]
 
+					// on regarde si la video est dans les favoris pour changer le style de l'icon
 					for (let index = 0; index < favs.length; index++) {
 						if (favs[index].Yurl === Yurl) {
 							isFav = true
@@ -179,6 +186,7 @@ class ListView extends React.Component {
 			}
 			console.log('LOG ======> _getVideos done')
 		} catch (error) {
+			this.setState({ list, isLoading: true })
 			console.log('LOG ======> _getVideos ' + error)
 		}
 	}
@@ -186,7 +194,6 @@ class ListView extends React.Component {
 
 mapStateToProps = state => {
 	return {
-		search: state.search,
 		region: state.region,
 		regions: state.regions,
 		favorites: state.favorites

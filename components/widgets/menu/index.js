@@ -1,9 +1,11 @@
-import React from 'react'
 import { View, TouchableOpacity } from 'react-native'
-import { Icon } from 'react-native-elements'
-import styles from './styles'
+import { Icon    } from 'react-native-elements'
 import { connect } from 'react-redux'
-import { SEARCH } from '../../../constants/action'
+import { SEARCH  } from '../../../constants/action'
+import   styles    from './styles'
+import   React     from 'react'
+
+
 
 class Menu extends React.Component {
 	render() {
