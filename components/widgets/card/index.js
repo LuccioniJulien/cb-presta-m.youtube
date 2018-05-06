@@ -6,22 +6,22 @@ import { connect   } from 'react-redux'
 import { SET_FAV   } from '../../../constants/action'
 import { CONFIG    } from '../../../constants/index'
 import { addStorage,removeStorage } from '../../../store/AsyncStorage'
-import { TouchableOpacity, Image, Dimensions } from 'react-native'
+import { TouchableOpacity, Image, Dimensions, View } from 'react-native'
 
 
 
 class Card extends React.Component {
 	render() {
 		return (
-			<TouchableOpacity style={styles.container} onPress={this.props.nav}>
-				<Image style={styles.image} source={{ uri: this.props.yobj.url }} />
-				<TouchableOpacity style={styles.row} onPress={this.props.nav}>
-					<TouchableOpacity style={styles.pad} onPress={() => this._fav()}>
-						<Icon size={20} color="#fff" containerStyle={this.props.yobj.isFav ? styles.Fav : styles.notFav} name="favorite" />
-					</TouchableOpacity >
-					{TextLimit({ str: this.props.yobj.title, style: { width: Dimensions.get('window').width - 100 } })}
+				<TouchableOpacity style={styles.container} onPress={this.props.nav}>
+					<Image style={styles.image} source={{ uri: this.props.yobj.url }} />
+					<TouchableOpacity style={styles.row} onPress={this.props.nav}>
+						<TouchableOpacity style={styles.pad} onPress={() => this._fav()}>
+							<Icon size={20} color="#fff" containerStyle={this.props.yobj.isFav ? styles.Fav : styles.notFav} name="favorite" />
+						</TouchableOpacity >
+						{TextLimit({ str: this.props.yobj.title, style: { width: Dimensions.get('window').width - 100 } })}
+					</TouchableOpacity>
 				</TouchableOpacity>
-			</TouchableOpacity>
 		)
 	}
 

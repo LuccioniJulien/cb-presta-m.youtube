@@ -18,27 +18,21 @@ class PickerView extends React.Component {
 
 		return (
 			<View style={[styles.container]}>
-				<Picker selectedValue={this.props.region.id} style={styles.pk} onValueChange={itemValue => this._pickRegion(itemValue)}>
+				<Picker selectedValue={this.props.region.id} style={styles.pk} onValueChange={(itemValue,itemPosition) => this._pickRegion(itemPosition)}>
 					{regions}
 				</Picker>
 			</View>
 		)
 	}
 
-	_pickRegion = async itemValue => {
-		for (const item of this.props.regions) {
-			if (item.id == itemValue) {
-				await addStorage(CONFIG.STORAGE.CURRENT_REGION, { id: itemValue, name: item.name })
-				this.props.dispatch({ type: SET_REGION, payload: { region: { id: itemValue, name: item.name } } })
-				return
-			}
-		}
+	_pickRegion = async i => {
+		await addStorage(CONFIG.STORAGE.CURRENT_REGION, { id: this.props.regions[i].id, name: this.props.regions[i].name })
+		this.props.dispatch({ type: SET_REGION, payload: { region: { id: this.props.regions[i].id, name: this.props.regions[i].name } } })
 	}
 }
 
 mapStateToProps = state => {
 	return {
-		search : state.search ,
 		region : state.region ,
 		regions: state.regions
 	}

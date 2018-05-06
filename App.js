@@ -25,7 +25,7 @@ export default class App extends React.Component {
 	async componentWillMount() {
 		try {
 			let region    = await getStorage(CONFIG.STORAGE.CURRENT_REGION)
-			let regions   = await getStorage(CONFIG.STORAGE.AVAIBLE_REGION)
+			let regions   = await getStorage(CONFIG.STORAGE.AVAILABLE_REGIONS)
 			let favorites = await getStorage(CONFIG.STORAGE.FAV           )
 	
 			favorites = favorites ? JSON.parse(favorites) : []

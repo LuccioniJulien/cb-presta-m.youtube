@@ -60,7 +60,8 @@ class ListView extends React.Component {
 	}
 
 	_ramdom = async () => {
-		// methode appelé pour faire choisir une région au hasard
+		// methode appelée pour faire choisir une région au hasard
+
 		if (!this.props.regions) {
 			return
 		}
@@ -71,17 +72,18 @@ class ListView extends React.Component {
 			type: SET_REGION,
 			payload: { region: randomRegion }
 		})
+		this.flatListRef.scrollToIndex({ index: 0 })
 	}
 
-	static getDerivedStateFromProps(next_props, prev_state) {
-		if (next_props.region.id == prev_state.regionCode.id) {
-			console.log('getDerivedStateFromProps nothing')
-			return null
-		} else {
-			console.log('getDerivedStateFromProps update')
-			return { list: [], search: '', nb_result: 0 }
-		}
-	}
+	// static getDerivedStateFromProps(next_props, prev_state) {
+	// 	if (next_props.region.id == prev_state.regionCode.id) {
+	// 		console.log('getDerivedStateFromProps nothing')
+	// 		return null
+	// 	} else {
+	// 		console.log('getDerivedStateFromProps update')
+	// 		return { list: [], search: '', nb_result: 0 }
+	// 	}
+	// }
 
 	componentDidUpdate() {
 		if (this.props.region.id != this.state.regionCode.id) {
@@ -103,7 +105,7 @@ class ListView extends React.Component {
 
 		return (
 			<View style={styles.container}>
-				{this.state.isSearchbarVisible ? <SearchBar submit={this._submit} /> : ''}
+				{this.state.isSearchbarVisible ? <SearchBar submit={this._submit} /> : <Text />}
 				<Text>{this.state.search == '' ? `Trends of ${this.props.region.name}` : `Search for ${this.state.search}`}</Text>
 				{/* <ScrollView onMomentumScrollEnd={ this._scrollEnd } style={{ width: Dimensions.get('window').width - 10 }}>{componentList}</ScrollView> */}
 				<FlatList
@@ -115,15 +117,17 @@ class ListView extends React.Component {
 					onEndReached={this._scrollEnd}
 					renderItem={({ item }) => {
 						return (
-							<Card
-								yobj={item}
-								nav={() =>
-									navigate('Player', {
-										key: `https://www.youtube.com/watch?v=${item.key}`,
-										title: TextLimit({ limit: 30, str: item.title, style: { fontSize: 13 } })
-									})
-								}
-							/>
+							<View>
+								<Card
+									yobj={item}
+									nav={() =>
+										navigate('Player', {
+											key: `https://www.youtube.com/watch?v=${item.key}`,
+											title: TextLimit({ limit: 30, str: item.title, style: { fontSize: 13 } })
+										})
+									}
+								/>
+							</View>
 						)
 					}}
 				/>
@@ -141,14 +145,14 @@ class ListView extends React.Component {
 	_submit = value => {
 		// methode appelée lorsque le bouton enter du clavier virtuel est pressé dans le textinput de la recherche
 		console.log('submit' + value)
-		this.flatListRef.scrollToIndex({ animated: true, index: 0 })
 		this._getVideos(value)
 		this.setState({ isSearchbarVisible: !this.state.isSearchbarVisible, search: value, nb_result: 0 })
+		this.flatListRef.scrollToIndex({ index: 0 })
 	}
 
 	_getRegions = async () => {
 		// fetch des régions dans la listView et non pas dans les Settings
-		// permet l'utilisation du bouton de sélection aléatoire 
+		// permet l'utilisation du bouton de sélection aléatoire d'une région
 		// lors du premier lancement de l'application
 		// sans que l'utilisateur ai besoin d'aller dans les settings
 		try {
@@ -181,7 +185,7 @@ class ListView extends React.Component {
 		try {
 			let region = this.props.region
 			// on change l'url si c'est une recherche ou bien les tendances d'une region
-			console.log(region)
+			// console.log(region)
 			url =
 				BASE_URL +
 				'/videos?part=snippet,contentDetails&type=video&videoSyndicated=true&chart=mostPopular&order=rating&regionCode=' +
@@ -191,7 +195,7 @@ class ListView extends React.Component {
 				(DEFAULT_NB_RESULT + nbResult) +
 				API_KEY
 			url = search == '' ? url : BASE_URL + '/search?part=snippet&type=video' + search + '&maxResults=' + (DEFAULT_NB_RESULT + nbResult) + API_KEY
-			console.log(url)
+			//console.log(url)
 			let response = await fetch(url)
 			let json = await response.json()
 			if (!json.error) {
