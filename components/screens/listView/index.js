@@ -1,18 +1,19 @@
-import   React        from 'react'
-import   styles       from './styles'
-import   Card         from '../../widgets/card'
-import   Menu         from '../../widgets/menu'
-import   SearchBar    from '../../widgets/searchBar'
-import   TextLimit    from '../../text_limit'
-import { connect    } from 'react-redux'
-import { CONFIG     } from '../../../constants/index'
+import React from 'react'
+import styles from './styles'
+import Card from '../../widgets/card'
+import Menu from '../../widgets/menu'
+import SearchBar from '../../widgets/searchBar'
+import TextLimit from '../../text_limit'
+import { connect } from 'react-redux'
+import { CONFIG } from '../../../constants/index'
 import { addStorage } from '../../../store/AsyncStorage'
-import { StyleSheet, Text, View, ScrollView, Image, Button, Dimensions } from 'react-native'
+import { StyleSheet, Text, View, ScrollView, Image, Button, Dimensions, FlatList } from 'react-native'
 import { SET_REGIONS, SET_REGION } from '../../../constants/action'
 
 const { BASE_URL, API_KEY, DEFAULT_REGION, DEFAULT_NB_RESULT } = CONFIG.YOUTUBE
 
 class ListView extends React.Component {
+
 	static navigationOptions = ({ navigation }) => {
 		const { params = {} } = navigation.state
 		return {
@@ -37,7 +38,9 @@ class ListView extends React.Component {
 			list: [],
 			regionCode: { id: 'FR', name: 'France' },
 			isLoading: true,
-			isSearchbarVisible: false
+			isSearchbarVisible: false,
+			search: '',
+			nb_result: 0
 		}
 	}
 
@@ -52,15 +55,18 @@ class ListView extends React.Component {
 	}
 
 	_search = () => {
+		// methode appelée pour faire apparaitre la barre de recherche
 		this.setState({ isSearchbarVisible: !this.state.isSearchbarVisible })
 	}
 
 	_ramdom = async () => {
+		// methode appelé pour faire choisir une région au hasard
 		if (!this.props.regions) {
 			return
 		}
 		let randomRegion = this.props.regions[Math.floor(Math.random() * Math.floor(this.props.regions.length))]
 		await addStorage(CONFIG.STORAGE.CURRENT_REGION, randomRegion)
+		this.setState({ search: '', nb_result: 0 })
 		this.props.dispatch({
 			type: SET_REGION,
 			payload: { region: randomRegion }
@@ -69,9 +75,11 @@ class ListView extends React.Component {
 
 	static getDerivedStateFromProps(next_props, prev_state) {
 		if (next_props.region.id == prev_state.regionCode.id) {
+			console.log('getDerivedStateFromProps nothing')
 			return null
 		} else {
-			return { list: [] }
+			console.log('getDerivedStateFromProps update')
+			return { list: [], search: '', nb_result: 0 }
 		}
 	}
 
@@ -83,20 +91,6 @@ class ListView extends React.Component {
 
 	render() {
 		const { navigate } = this.props.navigation
-		let componentList = this.state.list.map((item, idx) => {
-			return (
-				<Card
-					yobj={item}
-					key={idx}
-					nav={() =>
-						navigate('Player', {
-							Yurl: `https://www.youtube.com/watch?v=${item.Yurl}`,
-							title: TextLimit({ limit: 30, str: item.title, style: { fontSize: 13 } })
-						})
-					}
-				/>
-			)
-		})
 
 		if (this.state.isLoading) {
 			return (
@@ -110,20 +104,53 @@ class ListView extends React.Component {
 		return (
 			<View style={styles.container}>
 				{this.state.isSearchbarVisible ? <SearchBar submit={this._submit} /> : ''}
-				<Text>{`Trends of ${this.props.region.name ? this.props.region.name : 'France'}`}</Text>
-				<ScrollView style={{ width: Dimensions.get('window').width - 10 }}>{componentList}</ScrollView>
+				<Text>{this.state.search == '' ? `Trends of ${this.props.region.name}` : `Search for ${this.state.search}`}</Text>
+				{/* <ScrollView onMomentumScrollEnd={ this._scrollEnd } style={{ width: Dimensions.get('window').width - 10 }}>{componentList}</ScrollView> */}
+				<FlatList
+					style={{ width: Dimensions.get('window').width }}
+					ref={ref => {
+						this.flatListRef = ref
+					}}
+					data={this.state.list}
+					onEndReached={this._scrollEnd}
+					renderItem={({ item }) => {
+						return (
+							<Card
+								yobj={item}
+								nav={() =>
+									navigate('Player', {
+										key: `https://www.youtube.com/watch?v=${item.key}`,
+										title: TextLimit({ limit: 30, str: item.title, style: { fontSize: 13 } })
+									})
+								}
+							/>
+						)
+					}}
+				/>
 			</View>
 		)
 	}
 
+	_scrollEnd = () => {
+		// methode appelée lorsque le scroll de la flatlist atteind presque la fin
+		let nb = this.state.nb_result + 5
+		this._getVideos(this.state.search, nb)
+		this.setState({ nb_result: nb })
+	}
+
 	_submit = value => {
-		//onSubmitEditing
+		// methode appelée lorsque le bouton enter du clavier virtuel est pressé dans le textinput de la recherche
 		console.log('submit' + value)
+		this.flatListRef.scrollToIndex({ animated: true, index: 0 })
 		this._getVideos(value)
-		this.setState({ isSearchbarVisible: !this.state.isSearchbarVisible })
+		this.setState({ isSearchbarVisible: !this.state.isSearchbarVisible, search: value, nb_result: 0 })
 	}
 
 	_getRegions = async () => {
+		// fetch des régions dans la listView et non pas dans les Settings
+		// permet l'utilisation du bouton de sélection aléatoire 
+		// lors du premier lancement de l'application
+		// sans que l'utilisateur ai besoin d'aller dans les settings
 		try {
 			let response = await fetch(BASE_URL + '/i18nRegions?part=snippet&key=AIzaSyDq_JV_7kIBn5KcL0obvJGbcyqkHteq9HU')
 			let json = await response.json()
@@ -144,7 +171,8 @@ class ListView extends React.Component {
 		}
 	}
 
-	_getVideos = async (value = '') => {
+	_getVideos = async (value = '', nbResult = 0) => {
+		// fetch des vidéos
 		let list = []
 		let url = ''
 		const search = value == '' ? '' : '&q=' + value
@@ -152,41 +180,41 @@ class ListView extends React.Component {
 		//this.setState({isLoading:true})
 		try {
 			let region = this.props.region
-			// on change l'url si c'est une recherche ou bien les tendances d'un pays
+			// on change l'url si c'est une recherche ou bien les tendances d'une region
 			url =
 				BASE_URL +
 				'/search?part=snippet&type=video&videoSyndicated=true&order=rating&chart=mostPopular&regionCode=' +
 				region.id +
 				search +
 				'&maxResults=' +
-				DEFAULT_NB_RESULT +
+				(DEFAULT_NB_RESULT + nbResult) +
 				API_KEY
-			url = search == '' ? url : BASE_URL + '/search?part=snippet' + search + '&maxResults=' + DEFAULT_NB_RESULT + API_KEY
+			url = search == '' ? url : BASE_URL + '/search?part=snippet&type=video' + search + '&maxResults=' + (DEFAULT_NB_RESULT + nbResult) + API_KEY
 			let response = await fetch(url)
 			let json = await response.json()
 			if (!json.error) {
 				for (const item of json.items) {
 					let title = item.snippet.title
 					let url = item.snippet.thumbnails.high.url
-					let Yurl = item.id.videoId
+					let key = item.id.videoId
 					let isFav = false
 					let favs = [...this.props.favorites]
 
 					// on regarde si la video est dans les favoris pour changer le style de l'icon
 					for (let index = 0; index < favs.length; index++) {
-						if (favs[index].Yurl === Yurl) {
+						if (favs[index].key === key) {
 							isFav = true
 							index = favs.length
 						}
 					}
 
-					list.push({ title, url, Yurl, isFav })
+					list.push({ title, url, key, isFav })
 				}
 				this.setState({ list, isLoading: false, regionCode: region })
 			}
 			console.log('LOG ======> _getVideos done')
 		} catch (error) {
-			this.setState({ list, isLoading: true })
+			this.setState({ isLoading: true, search: '', nb_result: 0 })
 			console.log('LOG ======> _getVideos ' + error)
 		}
 	}

@@ -6,6 +6,7 @@ export async function getStorage(key) {
         return item
     } catch (error) {
         console.error(error)
+        alert('Unable to save')
     }
 }
 
@@ -14,6 +15,7 @@ export async function addStorage(key, data) {
         await AsyncStorage.setItem(key, JSON.stringify(data))
     } catch (error) {
         console.error(error)
+        alert('Unable to save')
     }
 }
 
@@ -22,5 +24,6 @@ export async function removeStorage(key) {
         await AsyncStorage.removeItem(key)
     } catch (error) {
         console.error(error)
+        alert('Unable to save')
     }
 }

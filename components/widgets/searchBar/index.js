@@ -4,9 +4,7 @@ import { connect } from 'react-redux'
 import   styles    from './styles'
 import   React     from 'react'
 
-
-
-class Searchbar extends React.Component {
+export default class Searchbar extends React.Component {
 	render() {
 		return (
 			<View style={styles.contener}>
@@ -15,11 +13,3 @@ class Searchbar extends React.Component {
 		)
 	}
 }
-
-mapStateToProps = state => {
-	return {
-		search: state.search
-	}
-}
-
-export default connect(mapStateToProps)(Searchbar)

@@ -10,10 +10,9 @@ export default class Player extends React.Component {
 	
 	render() {
     const { params } = this.props.navigation.state
-    console.log(params.Yurl)
 		return (
 			<View style={styles.wb}>
-				<WebView source={{ uri: params.Yurl }} style={styles.wb} />
+				<WebView source={{ uri: params.key }} style={styles.wb} />
 			</View>
 		)
 	}

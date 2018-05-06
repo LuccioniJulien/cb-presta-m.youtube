@@ -26,7 +26,7 @@ class Card extends React.Component {
 	}
 
 	_fav = async () => {
-	  // await removeStorage(CONFIG.STORAGE.FAV)
+	  // fav une vidéo
 		let video = this.props.yobj
 		video.isFav = !video.isFav
 		let favs = [...this.props.favorites]

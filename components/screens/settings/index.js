@@ -18,7 +18,7 @@ class PickerView extends React.Component {
 
 		return (
 			<View style={[styles.container]}>
-				<Picker selectedValue={this.props.region.id} style={{ height: 50, width: 100 }} onValueChange={itemValue => this._pickRegion(itemValue)}>
+				<Picker selectedValue={this.props.region.id} style={styles.pk} onValueChange={itemValue => this._pickRegion(itemValue)}>
 					{regions}
 				</Picker>
 			</View>
