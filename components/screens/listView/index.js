@@ -181,22 +181,24 @@ class ListView extends React.Component {
 		try {
 			let region = this.props.region
 			// on change l'url si c'est une recherche ou bien les tendances d'une region
+			console.log(region)
 			url =
 				BASE_URL +
-				'/search?part=snippet&type=video&videoSyndicated=true&order=rating&chart=mostPopular&regionCode=' +
+				'/videos?part=snippet,contentDetails&type=video&videoSyndicated=true&chart=mostPopular&order=rating&regionCode=' +
 				region.id +
 				search +
 				'&maxResults=' +
 				(DEFAULT_NB_RESULT + nbResult) +
 				API_KEY
 			url = search == '' ? url : BASE_URL + '/search?part=snippet&type=video' + search + '&maxResults=' + (DEFAULT_NB_RESULT + nbResult) + API_KEY
+			console.log(url)
 			let response = await fetch(url)
 			let json = await response.json()
 			if (!json.error) {
 				for (const item of json.items) {
 					let title = item.snippet.title
 					let url = item.snippet.thumbnails.high.url
-					let key = item.id.videoId
+					let key = search == '' ? item.id : item.id.videoId
 					let isFav = false
 					let favs = [...this.props.favorites]
 
