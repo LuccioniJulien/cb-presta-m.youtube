@@ -13,7 +13,6 @@ import { SET_REGIONS, SET_REGION } from '../../../constants/action'
 const { BASE_URL, API_KEY, DEFAULT_REGION, DEFAULT_NB_RESULT } = CONFIG.YOUTUBE
 
 class ListView extends React.Component {
-
 	static navigationOptions = ({ navigation }) => {
 		const { params = {} } = navigation.state
 		return {
@@ -72,7 +71,9 @@ class ListView extends React.Component {
 			type: SET_REGION,
 			payload: { region: randomRegion }
 		})
-		this.flatListRef.scrollToIndex({ index: 0 })
+		if (this.state.list.length != 0) {
+			this.flatListRef.scrollToIndex({ index: 0 })
+		}
 	}
 
 	static getDerivedStateFromProps(next_props, prev_state) {
@@ -89,7 +90,9 @@ class ListView extends React.Component {
 	componentDidUpdate() {
 		console.log('nb_result nb_result ===>' + this.state.nb_result)
 		if (this.props.region.id != this.state.regionCode.id) {
-			this.flatListRef.scrollToIndex({ index: 0 })
+			if (this.state.list.length != 0) {
+				this.flatListRef.scrollToIndex({ index: 0 })
+			}
 			this._getVideos()
 		}
 	}
@@ -150,7 +153,9 @@ class ListView extends React.Component {
 		console.log('submit' + value)
 		this._getVideos(value)
 		this.setState({ isSearchbarVisible: !this.state.isSearchbarVisible, search: value, nb_result: 0 })
-		this.flatListRef.scrollToIndex({ index: 0 })
+		if (this.state.list.length != 0) {
+			this.flatListRef.scrollToIndex({ index: 0 })
+		}
 	}
 
 	_getRegions = async () => {
@@ -191,14 +196,19 @@ class ListView extends React.Component {
 			// console.log(region)
 			url =
 				BASE_URL +
-				'/videos?part=snippet,contentDetails&type=video&videoSyndicated=true&chart=mostPopular&order=rating&regionCode=' +
+				'/videos?part=snippet,contentDetails&chart=mostPopular&order=rating&regionCode=' +
 				region.id +
 				search +
 				'&maxResults=' +
 				(DEFAULT_NB_RESULT + nbResult) +
-				API_KEY
-			url = search == '' ? url : BASE_URL + '/search?part=snippet&type=video' + search + '&maxResults=' + (DEFAULT_NB_RESULT + nbResult) + API_KEY
+				'&key=' +
+			API_KEY
+			url =
+				search == ''
+					? url
+					: BASE_URL + '/search?part=snippet&type=video' + search + '&maxResults=' + (DEFAULT_NB_RESULT + nbResult) + '&key=' + API_KEY
 			//console.log(url)
+			console.log('url : ' + url)
 			let response = await fetch(url)
 			let json = await response.json()
 			if (!json.error) {

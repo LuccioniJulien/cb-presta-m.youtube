@@ -27,6 +27,7 @@ class PickerView extends React.Component {
 	}
 
 	_pickRegion = async i => {
+		// console.log('pick : ' + JSON.stringify(this.props.regions[i]))
 		await addStorage(CONFIG.STORAGE.CURRENT_REGION, { id: this.props.regions[i].id, name: this.props.regions[i].name })
 		this.props.dispatch({ type: SET_REGION, payload: { region: { id: this.props.regions[i].id, name: this.props.regions[i].name } } })
 	}
