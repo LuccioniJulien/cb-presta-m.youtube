@@ -18,7 +18,8 @@ class PickerView extends React.Component {
 
 		return (
 			<View style={[styles.container]}>
-				<Picker selectedValue={this.props.region.id} style={styles.pk} onValueChange={(itemValue,itemPosition) => this._pickRegion(itemPosition)}>
+				<Text style={{ fontSize: 20 }}>Select a region</Text>
+				<Picker selectedValue={this.props.region.id} style={styles.pk} onValueChange={(itemValue, itemPosition) => this._pickRegion(itemPosition)}>
 					{regions}
 				</Picker>
 			</View>
@@ -33,7 +34,7 @@ class PickerView extends React.Component {
 
 mapStateToProps = state => {
 	return {
-		region : state.region ,
+		region: state.region,
 		regions: state.regions
 	}
 }

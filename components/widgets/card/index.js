@@ -19,7 +19,7 @@ class Card extends React.Component {
 						<TouchableOpacity style={styles.pad} onPress={() => this._fav()}>
 							<Icon size={20} color="#fff" containerStyle={this.props.yobj.isFav ? styles.Fav : styles.notFav} name="favorite" />
 						</TouchableOpacity >
-						{TextLimit({ str: this.props.yobj.title, style: { width: Dimensions.get('window').width - 100 } })}
+						{TextLimit({ str: this.props.yobj.title, style: { width: Dimensions.get('window').width - 100, color: '#fff' } })}
 					</TouchableOpacity>
 				</TouchableOpacity>
 		)

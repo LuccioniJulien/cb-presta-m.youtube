@@ -75,18 +75,21 @@ class ListView extends React.Component {
 		this.flatListRef.scrollToIndex({ index: 0 })
 	}
 
-	// static getDerivedStateFromProps(next_props, prev_state) {
-	// 	if (next_props.region.id == prev_state.regionCode.id) {
-	// 		console.log('getDerivedStateFromProps nothing')
-	// 		return null
-	// 	} else {
-	// 		console.log('getDerivedStateFromProps update')
-	// 		return { list: [], search: '', nb_result: 0 }
-	// 	}
-	// }
+	static getDerivedStateFromProps(next_props, prev_state) {
+		// console.log('next_props ======> ' + JSON.stringify(next_props) )
+		if (next_props.region.id == prev_state.regionCode.id) {
+			console.log('getDerivedStateFromProps nothing')
+			return null
+		} else {
+			console.log('getDerivedStateFromProps update')
+			return { search: '', nb_result: 0 }
+		}
+	}
 
 	componentDidUpdate() {
+		console.log('nb_result nb_result ===>' + this.state.nb_result)
 		if (this.props.region.id != this.state.regionCode.id) {
+			this.flatListRef.scrollToIndex({ index: 0 })
 			this._getVideos()
 		}
 	}
