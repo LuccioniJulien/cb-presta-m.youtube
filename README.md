@@ -1,6 +1,7 @@
 # SimiliYoutube
 
-fake miskin youtube
+Application faite en react native et utilisant l'API youtube.
+Permet de naviger entre les tendances youtubes de different pays
 
 ## feature
 
